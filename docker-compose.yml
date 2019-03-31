@@ -1,0 +1,19 @@
+# Use root/example as user/password credentials
+version: "3.1"
+
+services:
+  coach-server:
+    container_name: "coach-server"
+    build: .
+    depends_on:
+      - database
+    ports:
+      - "8080:8080"
+    entrypoint: "npm run prod"
+
+  database:
+    container_name: "mongo"
+    image: balnacska/coachdb
+    restart: always
+    ports:
+      - 27017:27017
