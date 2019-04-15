@@ -15,7 +15,7 @@ app.use(
 app.use("", tesztRouter);
 
 mongoose
-  .connect("mongodb://localhost:27018/entrance", {
+  .connect("mongodb://localhost:27017/entrance", {
     useNewUrlParser: true
   })
   .then(result => {

@@ -3,11 +3,13 @@ const User = require("../models/user");
 const Token = require("../models/token");
 
 exports.token = async (req, res, next) => {
+  console.info(`${req.method} ${req.originalUrl}`);
   //const query = Token.find({ name: "tesztToken" });
   const query = Token.find({ name: "teszt" }).select("-_id token");
   // const query = Token.save({ name: "tesztToken", token: generateToken() });
   try {
     const result = await query.lean().exec();
+    console.log(result);
     res.status(200).send(result[0]);
   } catch (error) {
     console.log(error);
@@ -16,6 +18,7 @@ exports.token = async (req, res, next) => {
 };
 
 exports.valid = async (req, res, next) => {
+  console.info(`${req.method} ${req.originalUrl} ${req.body} `);
   const userName = req.body.username;
   const token = req.body.token;
 
