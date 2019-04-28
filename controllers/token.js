@@ -5,7 +5,7 @@ const Token = require("../models/token");
 exports.token = async (req, res, next) => {
   console.info(`${req.method} ${req.originalUrl}`);
   //const query = Token.find({ name: "tesztToken" });
-  const query = Token.find({ name: "teszt" }).select("-_id token");
+  const query = Token.find({ name: "currentToken" }).select("-_id token");
   // const query = Token.save({ name: "tesztToken", token: generateToken() });
   try {
     const result = await query.lean().exec();
@@ -23,7 +23,9 @@ exports.valid = async (req, res, next) => {
   const token = req.body.token;
 
   const userQuery = User.find({ name: userName }).select("-_id date");
+
   const tokenQuery = Token.find({ name: "teszt" }).select("-_id token");
+
   try {
     let userResult = await userQuery.lean().exec();
     let tokenResult = await tokenQuery.lean().exec();
@@ -34,8 +36,11 @@ exports.valid = async (req, res, next) => {
         { name: "teszt" },
         { token: generateToken() }
       );
+
       let updateTokenResult = await updateTokenQuery.exec();
+
       console.log(updateTokenResult);
+
       res.status(200).json({ allowed: true });
     } else {
       res.status(403).json({ allowed: false });
