@@ -10,10 +10,3 @@ services:
     ports:
       - "3500:3500"
     entrypoint: "node index"
-
-  database:
-    container_name: "mongoe"
-    image: balnacska/coachdb
-    restart: always
-    ports:
-      - 27017:27017
