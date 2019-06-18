@@ -20,7 +20,7 @@ exports.token = async (req, res, next) => {
   console.log("ott");
 
   // const query = Token.save({ name: "tesztToken", token: generateToken() });
-  res.status(200).send(token);
+  res.status(200).json({ token: token });
   /* try {
     // const result = await query.lean().exec();
     console.log(result);
