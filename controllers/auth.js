@@ -16,18 +16,18 @@ exports.token = async (req, res, next) => {
   //const query = Token.find({ name: "tesztToken" });
   console.log("itt");
   //const query = Token.find({ name: "currentToken" }).select("-_id token");
-  const query = Token.find().select("-_id token");
+  //const query = Token.find().select("-_id token");
   console.log("ott");
 
   // const query = Token.save({ name: "tesztToken", token: generateToken() });
-  try {
-    const result = await query.lean().exec();
+  res.status(200).send(token);
+  /* try {
+    // const result = await query.lean().exec();
     console.log(result);
-    res.status(200).send(token);
   } catch (error) {
     console.log(error);
     res.status(500).send(error);
-  }
+  } */
 };
 
 exports.auth = async (req, res, next) => {
