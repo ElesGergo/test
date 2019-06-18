@@ -17,7 +17,7 @@ app.use("", authRouter);
 app.use("", tokenRouter);
 
 mongoose
-  .connect("mongodb://157.230.163.221:27017/entrance", {
+  .connect("mongodb://157.230.163.221:17017/entrance", {
     useNewUrlParser: true
   })
   .then(result => {

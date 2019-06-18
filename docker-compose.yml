@@ -5,8 +5,7 @@ services:
   entrance-server:
     container_name: "entrance-server"
     build: .
-    depends_on:
-      - database
+
     ports:
       - "3500:3500"
     entrypoint: "node index"
