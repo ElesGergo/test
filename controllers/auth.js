@@ -12,6 +12,7 @@ generateToken = () => {
 };
 
 exports.token = async (req, res, next) => {
+  console.log(req);
   //const query = Token.find({ name: "tesztToken" });
   //const query = Token.find({ name: "currentToken" }).select("-_id token");
   //const query = Token.find().select("-_id token");
