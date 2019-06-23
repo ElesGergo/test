@@ -12,12 +12,9 @@ generateToken = () => {
 };
 
 exports.token = async (req, res, next) => {
-  console.info(`${req.method} ${req.originalUrl}`);
   //const query = Token.find({ name: "tesztToken" });
-  console.log("itt");
   //const query = Token.find({ name: "currentToken" }).select("-_id token");
   //const query = Token.find().select("-_id token");
-  console.log("ott");
 
   // const query = Token.save({ name: "tesztToken", token: generateToken() });
   res.status(200).json({ token: token });
@@ -31,6 +28,7 @@ exports.token = async (req, res, next) => {
 };
 
 exports.auth = async (req, res, next) => {
+  console.log(req);
   let ut = req.body.userToken;
   let gt = req.body.gateToken;
 
