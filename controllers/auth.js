@@ -99,7 +99,7 @@ exports.canOpen = (req, res, next) => {
     });
     if (cabinetId) {
       res.status(200).send({
-        status: "2",
+        status_code: "2",
         data: [
           { msg: "Another cabient is taken by user!", cabinetId: cabinetId }
         ]
@@ -108,7 +108,10 @@ exports.canOpen = (req, res, next) => {
     } else {
       res
         .status(200)
-        .send({ status: "3", data: [{ msg: "No cabinet is taken by user!" }] });
+        .send({
+          status_code: "3",
+          data: [{ msg: "No cabinet is taken by user!" }]
+        });
       return;
     }
   }
