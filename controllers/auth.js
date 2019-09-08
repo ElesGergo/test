@@ -81,7 +81,7 @@ exports.openCabinet = (req, res, next) => {
 
   res.status(200).send({ status: "ok", data: cabinetArray[id - 1] });
 };
-exports.canOpen = (req, res, next) => {
+exports.validateCabinet = (req, res, next) => {
   //id:cabinet id
   //userToken: user Identifier
   let id = req.body.id;
@@ -106,12 +106,17 @@ exports.canOpen = (req, res, next) => {
       });
       return;
     } else {
-      res
-        .status(200)
-        .send({
-          status_code: "3",
-          data: [{ msg: "No cabinet is taken by user!" }]
+      if (cabinetArray[id - 1].taken) {
+        res.status(200).send({
+          status_code: "4",
+          data: [{ msg: "Cabinet is taken no cabinet is taken by user!" }]
         });
+        return;
+      }
+      res.status(200).send({
+        status_code: "3",
+        data: [{ msg: "Cabinet is empty no cabinet is taken by user!" }]
+      });
       return;
     }
   }
