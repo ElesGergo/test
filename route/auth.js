@@ -8,6 +8,9 @@ router.post("/login", authController.login);
 router.get("/users", authController.users);
 router.get("/token", authController.token);
 router.get("/cabinets", authController.cabinets);
-router.post("/cabinet", authController.cabinet);
+router.post("/takecabinet", authController.takecabinet);
+router.post("/leave", authController.leave);
+router.post("/openCabinet", authController.openCabinet);
+router.post("/canOpen", authController.canOpen);
 
 module.exports = router;

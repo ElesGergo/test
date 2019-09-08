@@ -4,35 +4,23 @@ const Token = require("../models/token");
 const randtoken = require("rand-token");
 
 var token = "123";
+let userArray = [];
+let cabinetArray = [];
 
-let user1 = {
-  id: 1,
-  email: "email1",
-  password: "pw1"
-};
-let user2 = {
-  id: 2,
-  email: "email2",
-  password: "pw2"
-};
-let user3 = {
-  id: 3,
-  email: "email3",
-  password: "pw3"
-};
-
-let cabinet1 = {
-  id: 1,
-  taken: false,
-  open: false,
-  userId: ""
-};
-let cabinet2 = {
-  id: 2,
-  taken: false,
-  open: false,
-  userId: ""
-};
+for (let i = 1; i < 80; i++) {
+  cabinetArray.push({
+    id: i,
+    taken: false,
+    closed: false,
+    userId: "",
+    takenFrom: ""
+  });
+  userArray.push({
+    id: i,
+    email: "email" + i,
+    password: "pw" + i
+  });
+}
 generateToken = () => {
   return randtoken.generate(10);
 };
@@ -69,23 +57,86 @@ exports.users = (req, res, next) => {
   return;
 };
 exports.cabinets = (req, res, next) => {
-  res.status(200).send({ status: "ok", data: [cabinet1, cabinet2] });
+  res.status(200).send({ status: "ok", data: cabinetArray });
   return;
 };
 
-exports.cabinet = (req, res, next) => {
+exports.takecabinet = (req, res, next) => {
+  //Csak akkor lehet kinyitni ha a userId és a cabinetId megegyezik
   let id = req.body.id;
-  if (id === 1) {
-    cabinet1.taken = req.body.cabinet.taken;
-    cabinet1.userId = req.body.cabinet.userId;
-    cabinet1.open = req.body.cabinet.open;
-    res.status(200).send({ status: "ok", data: [cabinet1] });
+  cabinetArray[id - 1].taken = req.body.cabinet.taken;
+  cabinetArray[id - 1].userId = req.body.cabinet.userId;
+  cabinetArray[id - 1].closed = req.body.cabinet.closed;
+  cabinetArray[id - 1].takenFrom = new Date();
+
+  res.status(200).send({ status: "ok", data: cabinetArray[id - 1] });
+};
+exports.openCabinet = (req, res, next) => {
+  //kapu és a pultos nyithatja ki kell naplózás
+  let id = req.body.id;
+  cabinetArray[id - 1].taken = false;
+  cabinetArray[id - 1].closed = false;
+  cabinetArray[id - 1].userId = "";
+  cabinetArray[id - 1].takenFrom = "";
+
+  res.status(200).send({ status: "ok", data: cabinetArray[id - 1] });
+};
+exports.canOpen = (req, res, next) => {
+  //id:cabinet id
+  //userToken: user Identifier
+  let id = req.body.id;
+  let ut = req.body.userToken;
+
+  if (cabinetArray[id - 1].userId === ut) {
+    res.status(200).send({ status_code: "1", data: [] });
     return;
   } else {
-    cabinet2.taken = req.body.cabinet.taken;
-    cabinet2.userId = req.body.cabinet.userId;
-    cabinet2.open = req.body.cabinet.open;
-    res.status(200).send({ status: "ok", data: [cabinet2] });
+    let cabinetId;
+    cabinetArray.forEach(cabinet => {
+      if (cabinet.userId === ut) {
+        cabinetId = cabinet.id;
+      }
+    });
+    if (cabinetId) {
+      res.status(200).send({
+        status: "2",
+        data: [
+          { msg: "Another cabient is taken by user!", cabinetId: cabinetId }
+        ]
+      });
+      return;
+    } else {
+      res
+        .status(200)
+        .send({ status: "3", data: [{ msg: "No cabinet is taken by user!" }] });
+      return;
+    }
+  }
+  cabinetArray[id - 1].closed = false;
+  cabinetArray[id - 1].userId = "";
+  cabinetArray[id - 1].takenFrom = "";
+
+  res.status(200).send({ status: "ok", data: cabinetArray[id - 1] });
+};
+
+exports.leave = (req, res, next) => {
+  //Most a userId
+  let ut = req.body.userToken;
+  let gotClosedCabinet = false;
+  let cabinetId = "";
+  console.log(ut);
+  cabinetArray.forEach(cabinet => {
+    if (cabinet.userId === ut) {
+      gotClosedCabinet = true;
+      cabinetId = cabinet.id;
+    }
+  });
+
+  if (gotClosedCabinet) {
+    res.status(200).send({ status_code: 0, data: { cabinetId: cabinetId } });
+    return;
+  } else {
+    res.status(200).send({ status_code: 1, data: [] });
     return;
   }
 };
@@ -105,8 +156,8 @@ exports.auth = async (req, res, next) => {
   }
   if (gt === token && ut === "2") {
     res.status(200).send({
-      status_code: 1,
-      status_msg: "Sikeres belépés"
+      status_code: 2,
+      status_msg: "Nincs érvényes bérlete!"
     });
     return;
   }
