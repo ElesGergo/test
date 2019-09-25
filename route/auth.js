@@ -11,6 +11,6 @@ router.get("/cabinets", authController.cabinets);
 router.post("/takecabinet", authController.takecabinet);
 router.post("/leave", authController.leave);
 router.post("/openCabinet", authController.openCabinet);
-router.post("/validateCabinet", authController.validateCabinet);
+router.post("/cabinetAction", authController.cabinetAction);
 
 module.exports = router;

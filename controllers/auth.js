@@ -81,50 +81,87 @@ exports.openCabinet = (req, res, next) => {
 
   res.status(200).send({ status: "ok", data: cabinetArray[id - 1] });
 };
-exports.validateCabinet = (req, res, next) => {
+exports.cabinetAction = (req, res, next) => {
   //id:cabinet id
   //userToken: user Identifier
-  let id = req.body.id;
-  let ut = req.body.userToken;
-
-  if (cabinetArray[id - 1].userId === ut) {
-    res.status(200).send({ status_code: "1", data: [] });
-    return;
-  } else {
+  let id = req.body.cabinetId;
+  let uId = req.body.userId;
+  let cs = req.body.cabinetAction;
+  console.log(cs);
+  if (cs === "opening") {
+    if (cabinetArray[id - 1].userId === uId) {
+      cabinetArray[id - 1].taken = false;
+      cabinetArray[id - 1].closed = false;
+      cabinetArray[id - 1].userId = "";
+      cabinetArray[id - 1].takenFrom = "";
+      res.status(200).send({ success: true, error: { code: 0, message: "" } });
+      return;
+    } else {
+      let cabinetId;
+      cabinetArray.forEach(cabinet => {
+        if (cabinet.userId === uId) {
+          cabinetId = cabinet.id;
+        }
+      });
+      if (cabinetId) {
+        //felhasználónak van sekrénye
+        res.status(200).send({
+          success: false,
+          error: {
+            code: 12,
+            message: `Van foglalt szerkrénye! Szekrényszám ${cabinetId}`
+          }
+        });
+        return;
+      } else {
+        //A szekrény elvan foglalva de nincs szekrénye
+        if (cabinetArray[id - 1].taken) {
+          res.status(200).send({
+            success: false,
+            error: { code: 21, message: `Foglalt szekrény!` }
+          });
+          return;
+        }
+      }
+    }
+  }
+  if (cs === "closing") {
+    console.log("itt");
     let cabinetId;
     cabinetArray.forEach(cabinet => {
-      if (cabinet.userId === ut) {
+      if (cabinet.userId === uId) {
         cabinetId = cabinet.id;
       }
     });
     if (cabinetId) {
+      //felhasználónak van sekrénye
       res.status(200).send({
-        status_code: "2",
-        data: [
-          { msg: "Another cabient is taken by user!", cabinetId: cabinetId }
-        ]
+        success: false,
+        error: {
+          code: 12,
+          message: `Van foglalt szerkrénye! Szekrényszám ${cabinetId}`
+        }
       });
       return;
     } else {
+      //A szekrény elvan foglalva de nincs szekrénye
       if (cabinetArray[id - 1].taken) {
         res.status(200).send({
-          status_code: "4",
-          data: [{ msg: "Cabinet is taken no cabinet is taken by user!" }]
+          success: false,
+          error: { code: 21, message: `Foglalt szekrény!` }
         });
         return;
       }
-      res.status(200).send({
-        status_code: "3",
-        data: [{ msg: "Cabinet is empty no cabinet is taken by user!" }]
-      });
-      return;
     }
+    cabinetArray[id - 1].taken = true;
+    cabinetArray[id - 1].closed = true;
+    cabinetArray[id - 1].userId = uId;
+    cabinetArray[id - 1].takenFrom = new Date().toISOString();
+    res.status(200).send({
+      success: true,
+      error: { code: 0, message: `` }
+    });
   }
-  cabinetArray[id - 1].closed = false;
-  cabinetArray[id - 1].userId = "";
-  cabinetArray[id - 1].takenFrom = "";
-
-  res.status(200).send({ status: "ok", data: cabinetArray[id - 1] });
 };
 
 exports.leave = (req, res, next) => {
